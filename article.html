@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>정보센터 — 클레임메이트</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Pretendard','system-ui','sans-serif']},colors:{brand:{50:'#eef4ff',100:'#dbe7ff',500:'#3b6fe0',600:'#2f59c4',700:'#264aa3',900:'#1b2f63'},ink:'#0f1729'}}}}
+</script>
+<script src="posts-data.js"></script>
+<style>
+.article h3{font-weight:700;font-size:1.05rem;margin-top:1.6rem;margin-bottom:.5rem}
+.article p{margin:.7rem 0;line-height:1.85;color:#334155}
+.article ul,.article ol{margin:.6rem 0 .6rem 1.1rem;line-height:1.9;color:#334155}
+.article ul{list-style:disc}.article ol{list-style:decimal}
+.article li{margin:.2rem 0}
+.article .tip{background:#eef4ff;border:1px solid #dbe7ff;border-radius:.75rem;padding:.9rem 1rem;color:#264aa3;font-size:.92rem}
+.article b{color:#0f1729}
+</style>
+</head>
+<body class="font-sans text-ink bg-white antialiased">
+
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-100">
+  <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 font-extrabold text-xl"><span class="inline-grid place-items-center w-8 h-8 rounded-lg bg-brand-500 text-white">C</span>클레임메이트</a>
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+      <a href="how-it-works.html" class="hover:text-brand-600">이용 방식</a>
+      <a href="search.html" class="hover:text-brand-600">진단코드 검색</a>
+      <a href="claim-guide.html" class="hover:text-brand-600">청구서 가이드</a>
+      <a href="content.html" class="text-brand-600 font-semibold">정보센터</a>
+      <a href="dashboard.html" class="hover:text-brand-600">대시보드</a>
+    </nav>
+    <a href="content.html" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-100 hover:bg-slate-200">← 목록</a>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-5 py-12">
+  <a href="content.html" class="text-sm text-brand-600 font-semibold">← 정보센터</a>
+  <div id="art" class="mt-4"></div>
+  <div id="more" class="mt-14 pt-8 border-t border-slate-100"></div>
+</main>
+
+<footer class="border-t border-slate-100 py-8 text-center text-xs text-slate-400">© 2026 클레임메이트 — 본 콘텐츠는 일반 정보 제공용이며 보험사·약관에 따라 다를 수 있습니다.</footer>
+
+<script>
+const COLOR={"상품개정":"text-brand-600 bg-brand-50","청구실무":"text-emerald-600 bg-emerald-50","질환정보":"text-amber-600 bg-amber-50","제도·법규":"text-violet-600 bg-violet-50","영업자료":"text-rose-600 bg-rose-50"};
+function qid(){const m=location.search.match(/id=(\d+)/);return m?+m[1]:1;}
+const id=qid();
+const p=(window.POSTS||[]).find(x=>x.id===id)||window.POSTS[0];
+const c=COLOR[p.cat]||"text-slate-600 bg-slate-50";
+document.getElementById('art').innerHTML=`
+  <span class="text-xs font-semibold px-2 py-1 rounded-full ${c}">${p.cat}</span>
+  <h1 class="mt-4 text-3xl font-extrabold tracking-tight leading-snug">${p.title}</h1>
+  <div class="mt-3 flex items-center gap-3 text-sm text-slate-400"><span>${p.date}</span><span>·</span><span>${p.min}분 읽기</span></div>
+  <div class="article mt-8">${p.body}</div>`;
+// related (same category)
+const rel=(window.POSTS||[]).filter(x=>x.cat===p.cat&&x.id!==p.id).slice(0,3);
+if(rel.length){document.getElementById('more').innerHTML=`<h3 class="font-bold mb-4">관련 글</h3>`+
+  rel.map(r=>`<a href="article.html?id=${r.id}" class="block py-3 border-b border-slate-50 hover:text-brand-600"><span class="font-semibold">${r.title}</span><span class="block text-sm text-slate-400 mt-0.5">${r.desc}</span></a>`).join('');}
+document.title=p.title+" — 클레임메이트";
+</script>
+</body>
+</html>

@@ -9,17 +9,19 @@
 <script>
 tailwind.config={theme:{extend:{fontFamily:{sans:['Pretendard','system-ui','sans-serif']},colors:{brand:{50:'#eef4ff',100:'#dbe7ff',500:'#3b6fe0',600:'#2f59c4',700:'#264aa3',900:'#1b2f63'},ink:'#0f1729'}}}}
 </script>
+<script src="posts-data.js"></script>
 </head>
 <body class="font-sans text-ink bg-slate-50 antialiased">
 
 <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-100">
   <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
     <a href="index.html" class="flex items-center gap-2 font-extrabold text-xl"><span class="inline-grid place-items-center w-8 h-8 rounded-lg bg-brand-500 text-white">C</span>클레임메이트</a>
-    <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+      <a href="how-it-works.html" class="hover:text-brand-600">이용 방식</a>
       <a href="search.html" class="hover:text-brand-600">진단코드 검색</a>
       <a href="claim-guide.html" class="hover:text-brand-600">청구서 가이드</a>
       <a href="content.html" class="text-brand-600 font-semibold">정보센터</a>
-      <a href="index.html#pricing" class="hover:text-brand-600">구독 안내</a>
+      <a href="dashboard.html" class="hover:text-brand-600">대시보드</a>
     </nav>
     <a href="index.html#pricing" class="px-4 py-2 text-sm font-semibold rounded-lg bg-brand-500 text-white hover:bg-brand-600">무료로 시작</a>
   </div>
@@ -29,7 +31,7 @@ tailwind.config={theme:{extend:{fontFamily:{sans:['Pretendard','system-ui','sans
   <h1 class="text-3xl font-extrabold tracking-tight">정보센터</h1>
   <p class="mt-3 text-slate-600">상품 개정·청구 실무·질환 정보 등 설계사에게 필요한 자료를 큐레이션합니다.</p>
 
-  <div class="mt-6 flex items-center gap-3">
+  <div class="mt-6 flex items-center gap-3 flex-wrap">
     <div id="cats" class="flex flex-wrap gap-2"></div>
     <input id="kw" oninput="render()" type="text" placeholder="검색…" class="ml-auto px-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-brand-400 outline-none" />
   </div>
@@ -40,39 +42,22 @@ tailwind.config={theme:{extend:{fontFamily:{sans:['Pretendard','system-ui','sans
 
 <script>
 const CATS=["전체","상품개정","청구실무","질환정보","제도·법규","영업자료"];
-const COLORS={"상품개정":"from-brand-100 to-brand-50 text-brand-600","청구실무":"from-emerald-100 to-emerald-50 text-emerald-600","질환정보":"from-amber-100 to-amber-50 text-amber-600","제도·법규":"from-violet-100 to-violet-50 text-violet-600","영업자료":"from-rose-100 to-rose-50 text-rose-600"};
-const POSTS=[
- {cat:"상품개정",title:"2026년 실손의료비 개정 핵심 정리",desc:"세대별 차이와 설계 시 체크포인트.",date:"2026-06-02",min:5},
- {cat:"청구실무",title:"암 진단비 청구, 서류 누락 줄이는 법",desc:"조사 대상 케이스와 대응 가이드.",date:"2026-05-30",min:7},
- {cat:"질환정보",title:"고혈압·당뇨 고객 인수 기준 한눈에",desc:"표준·부담보·거절 사례 비교.",date:"2026-05-28",min:6},
- {cat:"제도·법규",title:"본인정보 전송요구권과 마이데이터 활용",desc:"건강정보 동의·연동 흐름 이해하기.",date:"2026-05-26",min:8},
- {cat:"청구실무",title:"수술비 종수 분류, 이렇게 판단하세요",desc:"약관 수술분류표 매칭 실전.",date:"2026-05-24",min:6},
- {cat:"질환정보",title:"갑상선암은 왜 소액암으로 갈리나",desc:"코드·침윤 여부별 지급 차이.",date:"2026-05-22",min:4},
- {cat:"영업자료",title:"실손 전환 상담 스크립트 모음",desc:"고객 유형별 대화 예시.",date:"2026-05-20",min:5},
- {cat:"상품개정",title:"무·저해지 환급형 규제 변화 요약",desc:"판매 시 유의사항.",date:"2026-05-18",min:6},
- {cat:"제도·법규",title:"보험금 청구 간소화 제도 정리",desc:"의료기관 자료 전송 흐름.",date:"2026-05-15",min:7},
- {cat:"질환정보",title:"뇌혈관질환 코드 I60~I69 한눈에",desc:"진단비 지급 코드 범위와 유의점.",date:"2026-05-13",min:6},
- {cat:"질환정보",title:"허혈성심장질환(I20~I25) 보장 정리",desc:"협심증·심근경색 인수·청구 포인트.",date:"2026-05-11",min:5},
- {cat:"청구실무",title:"실손 통원 청구, 1회당 공제 계산법",desc:"세대별 공제·한도 비교 표.",date:"2026-05-09",min:6},
- {cat:"상품개정",title:"무·저해지 환급형 절판 마케팅 주의보",desc:"불완전판매 리스크 점검.",date:"2026-05-07",min:5},
- {cat:"질환정보",title:"갑상선결절, 양성도 고지 대상일까",desc:"결절 소견별 인수 가이드.",date:"2026-05-05",min:4},
- {cat:"청구실무",title:"후유장해 보험금, 장해율 판단 기준",desc:"장해분류표 적용 실전.",date:"2026-05-03",min:8},
- {cat:"제도·법규",title:"개인정보 활용 동의, 이렇게 받아야 안전",desc:"동의 범위·철회·열람 이력 관리.",date:"2026-05-01",min:7},
- {cat:"영업자료",title:"유병자 간편심사 상품 비교 가이드",desc:"3·5·10 고지형 핵심 차이.",date:"2026-04-29",min:6}
-];
+const GRAD={"상품개정":"from-brand-100 to-brand-50","청구실무":"from-emerald-100 to-emerald-50","질환정보":"from-amber-100 to-amber-50","제도·법규":"from-violet-100 to-violet-50","영업자료":"from-rose-100 to-rose-50"};
+const TXT={"상품개정":"text-brand-600","청구실무":"text-emerald-600","질환정보":"text-amber-600","제도·법규":"text-violet-600","영업자료":"text-rose-600"};
+const POSTS=(window.POSTS||[]).slice().sort((a,b)=> b.date.localeCompare(a.date));
 let active="전체";
 function renderCats(){document.getElementById('cats').innerHTML=CATS.map(c=>
   `<button onclick="setCat('${c}')" class="px-3 py-1.5 rounded-full text-sm font-semibold border ${c===active?'bg-brand-500 text-white border-brand-500':'bg-white border-slate-200 hover:border-brand-300'}">${c}</button>`).join('');}
 function setCat(c){active=c;renderCats();render();}
-function card(p){const col=COLORS[p.cat]||'from-slate-100 to-slate-50 text-slate-600';
-  return `<article class="rounded-2xl bg-white border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition">
-    <div class="h-32 bg-gradient-to-br ${col.split(' text-')[0]}"></div>
+function card(p){
+  return `<a href="article.html?id=${p.id}" class="block rounded-2xl bg-white border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition">
+    <div class="h-32 bg-gradient-to-br ${GRAD[p.cat]||'from-slate-100 to-slate-50'}"></div>
     <div class="p-5">
-      <span class="text-xs font-semibold ${'text-'+col.split('text-')[1]}">${p.cat}</span>
+      <span class="text-xs font-semibold ${TXT[p.cat]||'text-slate-600'}">${p.cat}</span>
       <h3 class="mt-2 font-bold leading-snug">${p.title}</h3>
       <p class="mt-2 text-sm text-slate-500">${p.desc}</p>
       <div class="mt-4 flex items-center justify-between text-xs text-slate-400"><span>${p.date}</span><span>${p.min}분 읽기</span></div>
-    </div></article>`;}
+    </div></a>`;}
 function render(){
   const kw=(document.getElementById('kw').value||'').trim();
   const list=POSTS.filter(p=>(active==="전체"||p.cat===active)&&(!kw||p.title.includes(kw)||p.desc.includes(kw)));
