@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>진단코드 검색 — 클레임메이트</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Pretendard','system-ui','sans-serif']},colors:{brand:{50:'#eef4ff',100:'#dbe7ff',500:'#3b6fe0',600:'#2f59c4',700:'#264aa3',900:'#1b2f63'},ink:'#0f1729'}}}}
+</script>
+</head>
+<body class="font-sans text-ink bg-slate-50 antialiased">
+
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-100">
+  <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 font-extrabold text-xl"><span class="inline-grid place-items-center w-8 h-8 rounded-lg bg-brand-500 text-white">C</span>클레임메이트</a>
+    <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
+      <a href="search.html" class="text-brand-600 font-semibold">진단코드 검색</a>
+      <a href="claim-guide.html" class="hover:text-brand-600">청구서 가이드</a>
+      <a href="content.html" class="hover:text-brand-600">정보센터</a>
+      <a href="index.html#pricing" class="hover:text-brand-600">구독 안내</a>
+    </nav>
+    <a href="index.html#pricing" class="px-4 py-2 text-sm font-semibold rounded-lg bg-brand-500 text-white hover:bg-brand-600">무료로 시작</a>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-5 py-12">
+  <h1 class="text-3xl font-extrabold tracking-tight">진단코드·질환 검색</h1>
+  <p class="mt-3 text-slate-600">KCD 코드 또는 질환명을 입력하면 보장·인수·조사 기준을 한눈에 확인합니다.</p>
+
+  <div class="mt-6 flex gap-2">
+    <input id="q" type="text" placeholder="예) C16, 위암, 고혈압, 당뇨 …" autocomplete="off"
+      class="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none" />
+    <button onclick="render()" class="px-6 py-3 rounded-xl bg-brand-500 text-white font-semibold hover:bg-brand-600">검색</button>
+  </div>
+  <div class="mt-3 flex flex-wrap gap-2 text-sm">
+    <button class="chip px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-brand-300">암</button>
+    <button class="chip px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-brand-300">고혈압</button>
+    <button class="chip px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-brand-300">당뇨</button>
+    <button class="chip px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-brand-300">갑상선</button>
+    <button class="chip px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-brand-300">디스크</button>
+  </div>
+
+  <div id="count" class="mt-8 text-sm text-slate-500"></div>
+  <div id="results" class="mt-3 grid gap-3"></div>
+  <p class="mt-10 text-xs text-slate-400">※ 표시 정보는 데모용 예시 데이터입니다. 실제 인수·보장·조사 기준은 보험사·약관에 따라 다릅니다.</p>
+</main>
+
+<script>
+const DATA=[
+ {code:"C16",name:"위의 악성 신생물(위암)",cat:"암",uw:"조사 대상",pay:"진단확정 시 암진단비 지급",note:"가입 전 위내시경·H.pylori 치료 이력 고지 확인"},
+ {code:"C18",name:"결장의 악성 신생물(대장암)",cat:"암",uw:"조사 대상",pay:"암진단비 지급",note:"용종 제거 이력·조직검사 결과 확인"},
+ {code:"C50",name:"유방의 악성 신생물(유방암)",cat:"암",uw:"조사 대상",pay:"암진단비 지급",note:"가족력·검진 이력 참고"},
+ {code:"C73",name:"갑상선의 악성 신생물(갑상선암)",cat:"암",uw:"소액암 분류 가능",pay:"유사암/소액암 진단비",note:"상품별 갑상선암 보장 구분 확인"},
+ {code:"D09",name:"제자리암(상피내암)",cat:"암",uw:"표준 인수 가능",pay:"유사암 진단비",note:"침윤 여부에 따라 분류 달라짐"},
+ {code:"I10",name:"본태성(원발성) 고혈압",cat:"고혈압",uw:"표준 인수",pay:"-",note:"약물치료 이력·혈압 수치 확인, 일부 부담보"},
+ {code:"I20",name:"협심증",cat:"심혈관",uw:"부담보/거절 가능",pay:"허혈성심장질환 진단비",note:"관상동맥 조영·스텐트 이력 확인"},
+ {code:"I63",name:"뇌경색증",cat:"뇌혈관",uw:"부담보/거절 가능",pay:"뇌혈관질환 진단비",note:"발병 시점·후유증 여부 핵심"},
+ {code:"E11",name:"제2형 당뇨병",cat:"당뇨",uw:"부담보 가능",pay:"-",note:"HbA1c·합병증 유무 기준 참고"},
+ {code:"E03",name:"기타 갑상선기능저하증",cat:"갑상선",uw:"표준 인수",pay:"-",note:"호르몬 수치 안정 시 표준 가능"},
+ {code:"M51",name:"기타 추간판 장애(허리디스크)",cat:"디스크",uw:"부위 부담보",pay:"수술 시 수술비",note:"MRI·수술 이력 확인"},
+ {code:"M17",name:"무릎관절증",cat:"관절",uw:"부위 부담보",pay:"수술 시 수술비",note:"인공관절 치환 이력 확인"},
+ {code:"J45",name:"천식",cat:"호흡기",uw:"표준/부담보",pay:"-",note:"중증도·치료 이력 확인"},
+ {code:"K80",name:"담석증",cat:"소화기",uw:"표준 인수",pay:"수술 시 수술비",note:"담낭절제 이력 확인"},
+ {code:"N18",name:"만성 신장병",cat:"신장",uw:"거절 가능",pay:"-",note:"단계(stage)·투석 여부 핵심"},
+ {code:"F32",name:"우울에피소드",cat:"정신",uw:"부담보/거절 가능",pay:"-",note:"치료 기간·입원 이력 확인"},
+ {code:"C61",name:"전립선의 악성 신생물(전립선암)",cat:"암",uw:"조사 대상",pay:"암진단비 지급",note:"PSA 수치·조직검사 확인"},
+ {code:"C34",name:"기관지 및 폐의 악성 신생물(폐암)",cat:"암",uw:"조사 대상",pay:"암진단비 지급",note:"흡연력·영상검사 확인"},
+ {code:"C22",name:"간 및 간내담관의 악성 신생물(간암)",cat:"암",uw:"조사 대상",pay:"암진단비 지급",note:"간염·간경변 이력 확인"},
+ {code:"I21",name:"급성 심근경색증",cat:"심혈관",uw:"거절 가능",pay:"허혈성심장질환 진단비",note:"발병 시점·시술 이력 핵심"},
+ {code:"I50",name:"심부전",cat:"심혈관",uw:"거절 가능",pay:"-",note:"EF 수치·입원 이력 확인"},
+ {code:"G20",name:"파킨슨병",cat:"신경",uw:"거절 가능",pay:"-",note:"진단 시점·ADL 확인"},
+ {code:"K70",name:"알코올성 간질환",cat:"소화기",uw:"부담보/거절 가능",pay:"-",note:"음주력·간수치 확인"},
+ {code:"H40",name:"녹내장",cat:"안과",uw:"부위 부담보",pay:"-",note:"안압·시야검사 이력 확인"}
+];
+function badge(t,color){return `<span class="text-xs font-semibold px-2 py-0.5 rounded-full ${color}">${t}</span>`}
+function card(d){
+  const uwColor = /거절/.test(d.uw)?'bg-rose-50 text-rose-600':/부담보|조사/.test(d.uw)?'bg-amber-50 text-amber-600':'bg-emerald-50 text-emerald-600';
+  return `<div class="p-5 rounded-2xl bg-white border border-slate-100 hover:shadow-lg transition">
+    <div class="flex items-center gap-3 flex-wrap">
+      <span class="font-mono font-bold text-brand-600">${d.code}</span>
+      <span class="font-bold">${d.name}</span>
+      ${badge(d.cat,'bg-brand-50 text-brand-700')}
+      ${badge(d.uw,uwColor)}
+    </div>
+    <div class="mt-3 grid sm:grid-cols-2 gap-2 text-sm">
+      <div class="text-slate-600"><span class="text-slate-400">보장</span> · ${d.pay}</div>
+      <div class="text-slate-600"><span class="text-slate-400">유의</span> · ${d.note}</div>
+    </div>
+  </div>`;
+}
+function render(){
+  const q=(document.getElementById('q').value||'').trim().toLowerCase();
+  const res=DATA.filter(d=> !q || d.code.toLowerCase().includes(q) || d.name.toLowerCase().includes(q) || d.cat.toLowerCase().includes(q));
+  document.getElementById('count').textContent = q? `"${document.getElementById('q').value}" 검색결과 ${res.length}건` : `전체 ${res.length}건`;
+  document.getElementById('results').innerHTML = res.length? res.map(card).join('') : `<div class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-100">검색 결과가 없습니다.</div>`;
+}
+document.getElementById('q').addEventListener('keyup',e=>{if(e.key==='Enter')render();else render()});
+document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{document.getElementById('q').value=b.textContent;render()}));
+render();
+</script>
+</body>
+</html>

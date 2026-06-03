@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>설계사 대시보드 — 클레임메이트</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Pretendard','system-ui','sans-serif']},colors:{brand:{50:'#eef4ff',100:'#dbe7ff',500:'#3b6fe0',600:'#2f59c4',700:'#264aa3',900:'#1b2f63'},ink:'#0f1729'}}}}
+</script>
+</head>
+<body class="font-sans text-ink bg-slate-100 antialiased">
+
+<header class="bg-white border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 font-extrabold text-xl"><span class="inline-grid place-items-center w-8 h-8 rounded-lg bg-brand-500 text-white">C</span>클레임메이트</a>
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+      <a href="search.html" class="hover:text-brand-600">진단코드</a>
+      <a href="claim-guide.html" class="hover:text-brand-600">청구가이드</a>
+      <a href="content.html" class="hover:text-brand-600">정보센터</a>
+      <a href="dashboard.html" class="text-brand-600 font-semibold">대시보드</a>
+    </nav>
+    <div class="flex items-center gap-2 text-sm"><span class="text-slate-500">윤설계사님</span><span class="w-8 h-8 rounded-full bg-brand-100 text-brand-700 grid place-items-center font-bold">윤</span></div>
+  </div>
+</header>
+
+<div class="max-w-7xl mx-auto px-5 py-6 grid lg:grid-cols-[300px_1fr] gap-6">
+  <!-- customer list -->
+  <aside class="bg-white rounded-2xl border border-slate-200 p-4 h-fit">
+    <div class="flex items-center justify-between">
+      <h2 class="font-bold">소개 고객</h2>
+      <span class="text-xs bg-brand-50 text-brand-700 font-semibold px-2 py-1 rounded-full">4명</span>
+    </div>
+    <input placeholder="고객 검색…" class="mt-3 w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-brand-400" />
+    <div id="clist" class="mt-3 space-y-1"></div>
+    <button class="mt-3 w-full py-2 rounded-lg border border-dashed border-slate-300 text-sm text-slate-500 hover:border-brand-300">+ 초대링크 복사</button>
+  </aside>
+
+  <!-- detail -->
+  <main class="space-y-6">
+    <!-- header card -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6">
+      <div class="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 id="cname" class="text-2xl font-extrabold"></h1>
+            <span id="cmeta" class="text-sm text-slate-500"></span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600">동의 완료</span>
+          </div>
+          <p class="mt-1 text-sm text-slate-500">건강보험심사평가원 진료내역 · 최근 3년 · 마지막 동기화 2026-06-03</p>
+        </div>
+        <div class="flex gap-2">
+          <a href="search.html" class="px-3 py-2 text-sm rounded-lg border border-slate-200 font-medium hover:border-brand-300">진단코드 조회</a>
+          <a href="claim-guide.html" class="px-3 py-2 text-sm rounded-lg bg-brand-500 text-white font-semibold hover:bg-brand-600">청구 가이드</a>
+        </div>
+      </div>
+      <!-- metric strip -->
+      <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="p-3 rounded-xl bg-slate-50"><div class="text-xs text-slate-500">진료 건수(3년)</div><div id="m1" class="text-xl font-bold"></div></div>
+        <div class="p-3 rounded-xl bg-slate-50"><div class="text-xs text-slate-500">주요 상병</div><div id="m2" class="text-xl font-bold"></div></div>
+        <div class="p-3 rounded-xl bg-slate-50"><div class="text-xs text-slate-500">추정 인수등급</div><div id="m3" class="text-xl font-bold"></div></div>
+        <div class="p-3 rounded-xl bg-slate-50"><div class="text-xs text-slate-500">청구 가능 포인트</div><div id="m4" class="text-xl font-bold text-brand-600"></div></div>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+      <!-- timeline -->
+      <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6">
+        <h3 class="font-bold">진료·투약·검진 내역</h3>
+        <div id="timeline" class="mt-4 space-y-4"></div>
+      </div>
+      <!-- analysis -->
+      <div class="space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 p-6">
+          <h3 class="font-bold">분석 요약</h3>
+          <ul id="analysis" class="mt-3 space-y-2 text-sm text-slate-600"></ul>
+        </div>
+        <div class="bg-brand-900 text-white rounded-2xl p-6">
+          <h3 class="font-bold">상담 제안</h3>
+          <p id="suggest" class="mt-2 text-sm text-brand-50 leading-relaxed"></p>
+        </div>
+      </div>
+    </div>
+    <p class="text-xs text-slate-400">※ 데모용 가상 데이터입니다. 실제 심평원 연동은 고객 동의·마이데이터 인증 후 제공됩니다.</p>
+  </main>
+</div>
+
+<script>
+const CUSTOMERS=[
+ {id:1,name:"김○수",meta:"남 · 1979년생",visits:42,dx:"고혈압",grade:"부담보 가능",points:2,
+  timeline:[
+   {date:"2026-04",cat:"진료",color:"brand",t:"내과 외래 — 본태성 고혈압(I10)",d:"혈압약 처방, 3개월 지속"},
+   {date:"2026-02",cat:"검진",color:"emerald",t:"국가건강검진",d:"공복혈당 108(경계), LDL 142"},
+   {date:"2025-11",cat:"투약",color:"amber",t:"고지혈증 약물 처방",d:"스타틴 계열 90일분"},
+   {date:"2024-09",cat:"진료",color:"brand",t:"정형외과 — 요통(M54)",d:"물리치료 5회"}
+  ],
+  analysis:["고혈압·고지혈 약물치료 이력 → 일부 부담보 가능","검진상 혈당 경계 → 당뇨 진행 모니터링 권장","최근 1년 입원/수술 이력 없음"],
+  suggest:"표준 인수가 어려울 수 있어 부담보 조건부 설계를 검토하세요. 건강검진 추적관찰 자료를 첨부하면 인수 협의에 유리합니다."},
+ {id:2,name:"이○영",meta:"여 · 1990년생",visits:18,dx:"갑상선결절",grade:"표준 인수 유력",points:1,
+  timeline:[
+   {date:"2026-03",cat:"검진",color:"emerald",t:"갑상선 초음파",d:"양성 결절, 추적관찰"},
+   {date:"2025-12",cat:"진료",color:"brand",t:"이비인후과 — 급성인두염(J02)",d:"단기 투약"}
+  ],
+  analysis:["갑상선 결절 양성·추적관찰 → 표준 인수 가능성 높음","만성질환·중대질병 이력 없음"],
+  suggest:"건강한 편입니다. 신규 종합보험·갑상선암(소액암) 보장 강화를 제안하기 좋은 케이스입니다."},
+ {id:3,name:"박○철",meta:"남 · 1968년생",visits:67,dx:"제2형 당뇨",grade:"부담보/일부 거절",points:3,
+  timeline:[
+   {date:"2026-05",cat:"진료",color:"brand",t:"내분비내과 — 제2형 당뇨(E11)",d:"HbA1c 7.8, 약물 조정"},
+   {date:"2026-01",cat:"진료",color:"brand",t:"안과 — 당뇨망막병증 의심",d:"정밀검사 권유"},
+   {date:"2025-08",cat:"투약",color:"amber",t:"당뇨·혈압 복합 처방",d:"장기 복용"}
+  ],
+  analysis:["당뇨 합병증 의심 소견 → 일부 담보 거절 가능","장기 약물치료 → 사망/질병 담보 부담보 검토"],
+  suggest:"신규 가입은 제한적입니다. 간편심사(유병자) 상품 또는 기가입 보장 점검·청구 지원으로 방향을 잡으세요."},
+ {id:4,name:"최○희",meta:"여 · 1985년생",visits:9,dx:"특이사항 없음",grade:"표준 인수",points:0,
+  timeline:[
+   {date:"2026-02",cat:"검진",color:"emerald",t:"국가건강검진",d:"전 항목 정상"},
+   {date:"2025-06",cat:"진료",color:"brand",t:"피부과 외래",d:"단순 처치"}
+  ],
+  analysis:["만성질환·투약 이력 없음 → 표준 인수","검진 정상"],
+  suggest:"우량체 케이스. 보장 공백 점검 후 신규·전환 설계를 폭넓게 제안할 수 있습니다."}
+];
+const CATC={brand:"bg-brand-500",emerald:"bg-emerald-500",amber:"bg-amber-500"};
+let sel=1;
+function renderList(){
+  document.getElementById('clist').innerHTML=CUSTOMERS.map(c=>
+   `<button onclick="select(${c.id})" class="w-full text-left px-3 py-2.5 rounded-xl ${c.id===sel?'bg-brand-50 border border-brand-200':'hover:bg-slate-50 border border-transparent'}">
+      <div class="flex items-center justify-between"><span class="font-semibold">${c.name}</span>${c.points?`<span class="text-xs bg-brand-500 text-white px-1.5 rounded-full">${c.points}</span>`:''}</div>
+      <div class="text-xs text-slate-500 mt-0.5">${c.meta} · ${c.dx}</div></button>`).join('');
+}
+function select(id){sel=id;renderList();renderDetail();}
+function renderDetail(){
+  const c=CUSTOMERS.find(x=>x.id===sel);
+  cname.textContent=c.name; cmeta.textContent=c.meta;
+  m1.textContent=c.visits+"건"; m2.textContent=c.dx; m3.textContent=c.grade; m4.textContent=c.points+"건";
+  document.getElementById('timeline').innerHTML=c.timeline.map(e=>
+   `<div class="flex gap-3">
+      <div class="flex flex-col items-center"><span class="w-3 h-3 rounded-full ${CATC[e.color]}"></span><span class="flex-1 w-px bg-slate-200"></span></div>
+      <div class="pb-1">
+        <div class="flex items-center gap-2"><span class="text-xs font-semibold text-slate-400">${e.date}</span><span class="text-xs px-1.5 py-0.5 rounded ${CATC[e.color]}/10 text-slate-600 bg-slate-100">${e.cat}</span></div>
+        <div class="font-semibold text-sm mt-0.5">${e.t}</div>
+        <div class="text-sm text-slate-500">${e.d}</div>
+      </div></div>`).join('');
+  document.getElementById('analysis').innerHTML=c.analysis.map(a=>`<li class="flex gap-2"><span class="text-brand-500">•</span><span>${a}</span></li>`).join('');
+  document.getElementById('suggest').textContent=c.suggest;
+}
+renderList();renderDetail();
+</script>
+</body>
+</html>

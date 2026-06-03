@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>보험금 청구서 가이드 — 클레임메이트</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Pretendard','system-ui','sans-serif']},colors:{brand:{50:'#eef4ff',100:'#dbe7ff',500:'#3b6fe0',600:'#2f59c4',700:'#264aa3',900:'#1b2f63'},ink:'#0f1729'}}}}
+</script>
+</head>
+<body class="font-sans text-ink bg-slate-50 antialiased">
+
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-100">
+  <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 font-extrabold text-xl"><span class="inline-grid place-items-center w-8 h-8 rounded-lg bg-brand-500 text-white">C</span>클레임메이트</a>
+    <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
+      <a href="search.html" class="hover:text-brand-600">진단코드 검색</a>
+      <a href="claim-guide.html" class="text-brand-600 font-semibold">청구서 가이드</a>
+      <a href="content.html" class="hover:text-brand-600">정보센터</a>
+      <a href="index.html#pricing" class="hover:text-brand-600">구독 안내</a>
+    </nav>
+    <a href="index.html#pricing" class="px-4 py-2 text-sm font-semibold rounded-lg bg-brand-500 text-white hover:bg-brand-600">무료로 시작</a>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-5 py-12">
+  <h1 class="text-3xl font-extrabold tracking-tight">보험금 청구서 가이드</h1>
+  <p class="mt-3 text-slate-600">청구 유형을 고르면 필요 서류 체크리스트와 작성 포인트를 안내합니다. 누락 없이 한 번에 준비하세요.</p>
+
+  <!-- type tabs -->
+  <div id="tabs" class="mt-7 flex flex-wrap gap-2"></div>
+
+  <div class="mt-6 grid md:grid-cols-3 gap-6">
+    <!-- checklist -->
+    <section class="md:col-span-2 p-6 rounded-2xl bg-white border border-slate-100">
+      <h2 id="ctitle" class="font-bold text-lg"></h2>
+      <p id="cdesc" class="mt-1 text-sm text-slate-500"></p>
+      <div id="checklist" class="mt-5 space-y-3"></div>
+      <div class="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
+        <span id="progress" class="text-sm text-slate-500"></span>
+        <button onclick="resetChk()" class="text-sm text-brand-600 font-semibold">체크 초기화</button>
+      </div>
+    </section>
+    <!-- tips -->
+    <aside class="p-6 rounded-2xl bg-brand-900 text-white">
+      <h3 class="font-bold">작성 포인트</h3>
+      <ul id="tips" class="mt-4 space-y-3 text-sm text-brand-50"></ul>
+      <div class="mt-6 p-3 rounded-xl bg-white/10 text-xs text-brand-100">고객 동의 후 심평원 진료내역을 연동하면 서류 준비가 더 빨라집니다.</div>
+    </aside>
+  </div>
+  <p class="mt-8 text-xs text-slate-400">※ 데모용 일반 안내입니다. 실제 필요 서류·기준은 보험사·약관·사안에 따라 다를 수 있습니다.</p>
+</main>
+
+<script>
+const TYPES={
+ "암 진단비":{desc:"암 진단확정에 따른 진단비 청구",docs:["보험금 청구서(서명)","신분증 사본","조직검사 결과지(병리)","진단서(질병분류기호 KCD 포함)","진료기록 사본(필요 시)","수익자 통장 사본"],tips:["병리 조직검사 결과의 KCD 코드 확인","‘의증’이 아닌 ‘확정’ 진단인지 확인","유사암/소액암 여부로 지급률 달라짐"]},
+ "입원 일당":{desc:"질병·상해 입원에 따른 일당 청구",docs:["보험금 청구서(서명)","신분증 사본","입퇴원 확인서","진단서 또는 소견서","진료비 영수증","수익자 통장 사본"],tips:["입원일수·병명 일치 여부 확인","동일 질병 재입원 합산 규정 체크","상급병실료 등 공제 항목 안내"]},
+ "수술비":{desc:"수술 분류표에 따른 수술비 청구",docs:["보험금 청구서(서명)","수술확인서(수술명·코드)","진단서","진료비 세부내역서","신분증 사본","수익자 통장 사본"],tips:["수술명·수술코드 정확히 확인","약관 수술분류표상 종수(1~5종) 매칭","동시 수술·재수술 규정 확인"]},
+ "실손 의료비":{desc:"통원·입원 실손 의료비 청구",docs:["보험금 청구서(서명)","진료비 영수증","진료비 세부내역서","처방전·약제비 영수증","질병분류기호 포함 서류","신분증 사본"],tips:["통원 1회당 공제·한도 확인","비급여 항목 명세 필요","세대(1~4세대)별 보장 차이 안내"]},
+ "후유장해":{desc:"장해분류표에 따른 후유장해 보험금",docs:["보험금 청구서(서명)","후유장해진단서(장해율)","진단서·진료기록","검사결과지(영상 등)","신분증 사본","수익자 통장 사본"],tips:["장해 고정 시점 이후 진단","지급률(%)·장해분류표 매칭","기존 장해 합산 규정 확인"]}
+};
+let current=Object.keys(TYPES)[0];
+let checked={};
+function renderTabs(){
+  document.getElementById('tabs').innerHTML=Object.keys(TYPES).map(t=>
+    `<button onclick="select('${t}')" class="px-4 py-2 rounded-full text-sm font-semibold border ${t===current?'bg-brand-500 text-white border-brand-500':'bg-white border-slate-200 hover:border-brand-300'}">${t}</button>`).join('');
+}
+function renderBody(){
+  const d=TYPES[current];
+  document.getElementById('ctitle').textContent=current+" 청구";
+  document.getElementById('cdesc').textContent=d.desc;
+  document.getElementById('checklist').innerHTML=d.docs.map((doc,i)=>{
+    const on=checked[current]&&checked[current][i];
+    return `<label class="flex items-center gap-3 p-3 rounded-xl border ${on?'border-brand-200 bg-brand-50/50':'border-slate-100'} cursor-pointer">
+      <input type="checkbox" ${on?'checked':''} onchange="toggle(${i})" class="w-5 h-5 accent-brand-500" />
+      <span class="${on?'line-through text-slate-400':''}">${doc}</span></label>`;
+  }).join('');
+  document.getElementById('tips').innerHTML=d.tips.map(t=>`<li class="flex gap-2"><span>•</span><span>${t}</span></li>`).join('');
+  const total=d.docs.length, done=(checked[current]||[]).filter(Boolean).length;
+  document.getElementById('progress').textContent=`준비 ${done}/${total}`;
+}
+function select(t){current=t;renderTabs();renderBody();}
+function toggle(i){checked[current]=checked[current]||[];checked[current][i]=!checked[current][i];renderBody();}
+function resetChk(){checked[current]=[];renderBody();}
+renderTabs();renderBody();
+</script>
+</body>
+</html>
